@@ -9,24 +9,25 @@ def read_csv(ws):
     url = results[1]
     response = requests.get(url).content.decode()
     events = response.split("\n")
-    print(len(events))
     for i in range(1, len(events)):
         event_type = events[i].split(",")[0]
         if (event_type == "goal"):
             send_goal(ws, events[i])
         if (event_type == "possession"):
             send_possetion(ws, events[i])
-    ws.recv()
-    ws.close()
+    
+    print("finnished")
+    while True:
+        print(ws.recv())
         
 
 def send_goal(ws, event):
     parts = event.split(',')
-    message = "matchlivegoals|" + parts[0] + "|" + parts[1]
+    message = "matchlivegoals|" + parts[0] + "|" + parts[1] + "|"
     ws.send(message)
+    print(ws.recv())
 
 def send_possetion(ws, event):
-    print(event)
     parts = event.split(',')
     side = parts[1]
     coords = parts[2].split(":")
@@ -40,7 +41,7 @@ def send_possetion(ws, event):
             possetion = "goalkick"
         if (x == 400 and (y == 180 or y == 0)):
             possetion = "corner"
-    if (side == "away"):
+    elif (side == "away"):
         if (x < (1/3)*400):
             possetion = "attack"
         if (x == 370 and (y == 120 or y == 60)):
