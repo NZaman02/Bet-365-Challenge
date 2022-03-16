@@ -1,16 +1,29 @@
+from numpy import spacing
 from websocket import create_connection
 import requests
 import time
 
 def read_csv(ws):
-    ws.send("matchlivexy|")
+    ws.send("matchlivetimes|")
     result = ws.recv()
     results = result.split("|")
     url = results[1]
     response = requests.get(url).content.decode()
     events = response.split("\n")
+    print(events)
+    curr_time = 0
     for i in range(1, len(events)):
-        event_type = events[i].split(",")[0]
+        parts = events[i].split(",")
+        event_type = parts[0]
+        timer = parts[3]
+        mins = int(timer.split(":")[0])
+        sec = int(timer.split(":")[1])
+        time.sleep(mins*60+sec - curr_time)
+        print(mins*60+sec - curr_time)
+        print(sec)
+        curr_time = mins*60+sec
+        if (event_type == "kickoff"):
+            ws.send("matchlivetimes|kickoff||")
         if (event_type == "goal"):
             send_goal(ws, events[i])
         if (event_type == "possession"):
