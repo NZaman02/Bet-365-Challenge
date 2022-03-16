@@ -1,15 +1,9 @@
-import socket
+import json
+from websocket import create_connection
 
-HOST = "wss://service.codechallenge.co.uk/socket"  
-
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.bind((HOST))
-    s.listen()
-    conn, addr = s.accept()
-    with conn:
-        print(f"Connected by {addr}")
-        while True:
-            data = conn.recv(1024)
-            if not data:
-                break
-            conn.sendall(data)
+try:
+    ws = create_connection("wss://service.codechallenge.co.uk/socket")
+    ws.send('connect|{"teamName":"TeamPyPeople","password":"PythonPeople"}')
+except Exception as ex:
+    print("exception: ", format(ex))
+    
