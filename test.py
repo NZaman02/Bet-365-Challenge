@@ -10,10 +10,16 @@ try:
     result = ws.recv()
     results = result.split("|")
     url = results[1]
-    print(url)
-    response = requests.get(url)
-    print (response.status_code)
-    print (response.content)
+    response = requests.get(url).content.decode()
+    events = response.split("\n")
+    print(events)
+    for i in range(1, len(events)):
+        parts = events[i].split(',')
+        message = "matchlivegoals|" + parts[0] + "|" + parts[1]
+        print(type(message))
+        print(message)
+        ws.send(message)
+
 except Exception as ex:
     print("exception: ", format(ex))
     
