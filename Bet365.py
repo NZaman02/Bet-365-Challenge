@@ -10,7 +10,6 @@ def read_csv(ws):
     url = results[1]
     response = requests.get(url).content.decode()
     events = response.split("\n")
-    print(events)
     curr_time = 0
     for i in range(1, len(events)):
         parts = events[i].split(",")
@@ -19,8 +18,6 @@ def read_csv(ws):
         mins = int(timer.split(":")[0])
         sec = int(timer.split(":")[1])
         time.sleep(mins*60+sec - curr_time)
-        print(mins*60+sec - curr_time)
-        print(sec)
         curr_time = mins*60+sec
         if (event_type == "kickoff"):
             ws.send("matchlivetimes|kickoff||")
@@ -28,7 +25,7 @@ def read_csv(ws):
             send_goal(ws, events[i])
         if (event_type == "possession"):
             send_possetion(ws, events[i])
-    
+
     print("finnished")
     while True:
         print(ws.recv())
@@ -36,9 +33,9 @@ def read_csv(ws):
 
 def send_goal(ws, event):
     parts = event.split(',')
-    message = "matchlivegoals|" + parts[0] + "|" + parts[1] + "|"
+    message = "matchlivegoals|" + parts[0] + "|" + parts[1] + "||"
     ws.send(message)
-    print(ws.recv())
+    print(message)
 
 def send_possetion(ws, event):
     parts = event.split(',')
@@ -62,7 +59,7 @@ def send_possetion(ws, event):
         if (x == 0 and (y == 180 or y == 0)):
             possetion = "corner"
 
-    message = "matchlivexy|" + possetion + "|" + side + "|" + parts[2]
+    message = "matchlivexy|" + possetion + "|" + side + "|" + parts[2] + "|"
     print(message)
     ws.send(message)
 
